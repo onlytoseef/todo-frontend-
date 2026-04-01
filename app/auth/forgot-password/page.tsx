@@ -6,6 +6,7 @@ import { FormEvent, useState } from 'react';
 import { apiRequest, ApiError, fireAndForget } from '../../../src/lib/api';
 import { useToast } from '../../../src/components/ui/ToastProvider';
 import SidebarArt from '../../../src/components/ui/SidebarArt';
+import LoadingSpinner from '../../../src/components/ui/LoadingSpinner';
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -57,7 +58,14 @@ export default function ForgotPasswordPage() {
           />
 
           <button type="submit" className="auth-submit" disabled={loading}>
-            {loading ? 'Please wait...' : 'Send OTP'}
+            {loading ? (
+              <span className="loading-label">
+                <LoadingSpinner />
+                Please wait...
+              </span>
+            ) : (
+              'Send OTP'
+            )}
           </button>
         </form>
 

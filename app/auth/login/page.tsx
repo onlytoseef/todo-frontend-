@@ -10,6 +10,7 @@ import { setAuth } from '../../../src/store/slices/authSlice';
 import { useAppDispatch } from '../../../src/store';
 import { useToast } from '../../../src/components/ui/ToastProvider';
 import SidebarArt from '../../../src/components/ui/SidebarArt';
+import LoadingSpinner from '../../../src/components/ui/LoadingSpinner';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -80,7 +81,14 @@ export default function LoginPage() {
           />
 
           <button type="submit" className="auth-submit" disabled={loading}>
-            {loading ? 'Please wait...' : 'Login'}
+            {loading ? (
+              <span className="loading-label">
+                <LoadingSpinner />
+                Please wait...
+              </span>
+            ) : (
+              'Login'
+            )}
           </button>
         </form>
 

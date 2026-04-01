@@ -120,6 +120,10 @@ body {
   color: #f6dc17;
   font-size: clamp(16px, 2.2vw, 22px);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .auth-submit:disabled {
@@ -192,6 +196,10 @@ body {
   line-height: 1;
   cursor: pointer;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .shopping-list {
@@ -261,6 +269,48 @@ body {
   padding: 0 10px;
   font-size: clamp(12px, 1.4vw, 15px);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.loading-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(246, 220, 23, 0.35);
+  border-top-color: #f6dc17;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.loading-spinner-sm {
+  width: 14px;
+  height: 14px;
+  border-width: 2px;
+}
+
+.loading-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.list-loading {
+  color: #d7d8db;
+  font-size: 14px;
+  padding: 12px 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .remove-btn {

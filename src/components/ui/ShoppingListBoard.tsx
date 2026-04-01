@@ -9,6 +9,7 @@ import { clearAuth } from "../../store/slices/authSlice";
 import { clearAuthStorage } from "../../lib/storage";
 import { useToast } from "./ToastProvider";
 import SidebarArt from "./SidebarArt";
+import LoadingSpinner from "./LoadingSpinner";
 
 interface TodoItem {
   id: string;
@@ -26,6 +27,10 @@ export default function ShoppingListBoard() {
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
+  const [isFetchingTodos, setIsFetchingTodos] = useState(true);
+  const [isAdding, setIsAdding] = useState(false);
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [removingId, setRemovingId] = useState<string | null>(null);
 
   const canLoadTodos = useMemo(() => isHydrated && Boolean(token && user), [isHydrated, token, user]);
 
@@ -51,6 +56,7 @@ export default function ShoppingListBoard() {
     let alive = true;
 
     const loadTodos = async () => {
+      setIsFetchingTodos(true);
       try {
         const data = await apiRequest<Todo[]>("/todos", {}, token);
         if (!alive) {
@@ -63,6 +69,10 @@ export default function ShoppingListBoard() {
         }
         const message = err instanceof ApiError ? err.message : "Failed to fetch todos.";
         toast.error(message);
+      } finally {
+        if (alive) {
+          setIsFetchingTodos(false);
+        }
       }
     };
 
@@ -97,6 +107,7 @@ export default function ShoppingListBoard() {
     }
 
     try {
+      setIsAdding(true);
       const created = await apiRequest<Todo>(
         "/todos",
         {
@@ -116,6 +127,8 @@ export default function ShoppingListBoard() {
     } catch (err) {
       const message = err instanceof ApiError ? err.message : "Failed to add item.";
       toast.error(message);
+    } finally {
+      setIsAdding(false);
     }
   }
 
@@ -126,12 +139,15 @@ export default function ShoppingListBoard() {
     }
 
     try {
+      setRemovingId(id);
       await apiRequest<{ message: string }>(`/todos/${id}`, { method: "DELETE" }, token);
       setTodos((prev) => prev.filter((item) => item.id !== id));
       toast.info("Item removed.");
     } catch (err) {
       const message = err instanceof ApiError ? err.message : "Failed to remove item.";
       toast.error(message);
+    } finally {
+      setRemovingId(null);
     }
   }
 
@@ -165,6 +181,7 @@ export default function ShoppingListBoard() {
     }
 
     try {
+      setSavingId(todo.id);
       const updated = await apiRequest<Todo>(
         `/todos/${todo.id}`,
         {
@@ -193,6 +210,8 @@ export default function ShoppingListBoard() {
     } catch (err) {
       const message = err instanceof ApiError ? err.message : "Failed to update item.";
       toast.error(message);
+    } finally {
+      setSavingId(null);
     }
   }
 
@@ -225,12 +244,25 @@ export default function ShoppingListBoard() {
             onChange={(e) => setQty(e.target.value)}
             className="qty-input"
           />
-          <button type="submit" className="add-btn">
-            Add
+          <button type="submit" className="add-btn" disabled={isAdding}>
+            {isAdding ? (
+              <span className="loading-label">
+                <LoadingSpinner />
+                Adding...
+              </span>
+            ) : (
+              'Add'
+            )}
           </button>
         </form>
 
         <ul className="shopping-list">
+          {isFetchingTodos ? (
+            <li className="list-loading">
+              <LoadingSpinner />
+              Loading todos...
+            </li>
+          ) : null}
           {todos.map((todo) => (
             <li key={todo.id} className="shopping-item">
               <span className="qty-badge">{todo.qty}</span>
@@ -245,9 +277,17 @@ export default function ShoppingListBoard() {
                   <button
                     type="button"
                     className="save-btn"
+                    disabled={savingId === todo.id}
                     onClick={() => onSaveEdit(todo)}
                   >
-                    Save
+                    {savingId === todo.id ? (
+                      <span className="loading-label">
+                        <LoadingSpinner size="sm" />
+                        Saving
+                      </span>
+                    ) : (
+                      'Save'
+                    )}
                   </button>
                   <button type="button" className="remove-btn" onClick={onCancelEdit} aria-label="Cancel edit">
                     ×
@@ -266,10 +306,11 @@ export default function ShoppingListBoard() {
                   <button
                     type="button"
                     className="remove-btn"
+                    disabled={removingId === todo.id}
                     onClick={() => onRemoveTodo(todo.id)}
                     aria-label={`Remove ${todo.title}`}
                   >
-                    ×
+                    {removingId === todo.id ? <LoadingSpinner size="sm" /> : '×'}
                   </button>
                 </>
               )}

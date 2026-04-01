@@ -6,6 +6,7 @@ import { FormEvent, useState } from 'react';
 import { apiRequest, ApiError, fireAndForget } from '../../../src/lib/api';
 import { useToast } from '../../../src/components/ui/ToastProvider';
 import SidebarArt from '../../../src/components/ui/SidebarArt';
+import LoadingSpinner from '../../../src/components/ui/LoadingSpinner';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -72,7 +73,14 @@ export default function SignupPage() {
           />
 
           <button type="submit" className="auth-submit" disabled={loading}>
-            {loading ? 'Please wait...' : 'Signup'}
+            {loading ? (
+              <span className="loading-label">
+                <LoadingSpinner />
+                Please wait...
+              </span>
+            ) : (
+              'Signup'
+            )}
           </button>
         </form>
 

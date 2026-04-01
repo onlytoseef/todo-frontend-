@@ -6,6 +6,7 @@ import { FormEvent, Suspense, useState } from 'react';
 import { apiRequest, ApiError } from '../../../src/lib/api';
 import { useToast } from '../../../src/components/ui/ToastProvider';
 import SidebarArt from '../../../src/components/ui/SidebarArt';
+import LoadingSpinner from '../../../src/components/ui/LoadingSpinner';
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -91,7 +92,14 @@ function ResetPasswordForm() {
           />
 
           <button type="submit" className="auth-submit" disabled={loading}>
-            {loading ? 'Please wait...' : 'Reset Password'}
+            {loading ? (
+              <span className="loading-label">
+                <LoadingSpinner />
+                Please wait...
+              </span>
+            ) : (
+              'Reset Password'
+            )}
           </button>
         </form>
 

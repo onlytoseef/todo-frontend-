@@ -6,6 +6,7 @@ import { FormEvent, Suspense, useMemo, useState } from 'react';
 import { apiRequest, ApiError } from '../../../src/lib/api';
 import { useToast } from '../../../src/components/ui/ToastProvider';
 import SidebarArt from '../../../src/components/ui/SidebarArt';
+import LoadingSpinner from '../../../src/components/ui/LoadingSpinner';
 
 function VerifyForm() {
   const router = useRouter();
@@ -88,7 +89,14 @@ function VerifyForm() {
           />
 
           <button type="submit" className="auth-submit" disabled={loading}>
-            {loading ? 'Please wait...' : 'Verify OTP'}
+            {loading ? (
+              <span className="loading-label">
+                <LoadingSpinner />
+                Please wait...
+              </span>
+            ) : (
+              'Verify OTP'
+            )}
           </button>
         </form>
 
